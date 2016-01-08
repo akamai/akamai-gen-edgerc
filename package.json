@@ -25,6 +25,10 @@
     "gen-edgerc": "bin/gen-edgerc.js"
   },
   "dependencies": {
-    "command-line-args": "^2.1.4",
+    "command-line-args": "^2.1.4"
+  },
+  "devDependencies": {
+    "mocha": "^2.3.4",
+    "chai": "^3.4.1"
   }
 }

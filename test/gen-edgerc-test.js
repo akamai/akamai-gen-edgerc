@@ -1,0 +1,1 @@
+var genEdgerc = require('../bin/gen-edgerc');
