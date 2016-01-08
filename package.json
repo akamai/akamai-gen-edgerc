@@ -1,0 +1,27 @@
+{
+  "name": "akamai-gen-edgerc",
+  "version": "1.0.0",
+  "description": "A command-line tool for creating and adding sections to an Akamai .edgerc file.",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akamai-open/akamai-gen-edgerc.git"
+  },
+  "keywords": [
+    "akamai",
+    "edgerc",
+    "generator"
+  ],
+  "author": "Kyle Tyacke",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/akamai-open/akamai-gen-edgerc/issues"
+  },
+  "homepage": "https://github.com/akamai-open/akamai-gen-edgerc#readme",
+  "preferGlobal": true,
+  "bin": {
+    "gen-edgerc": "bin/gen-edgerc.js"
+  }
+}
