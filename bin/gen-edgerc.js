@@ -17,5 +17,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 **/
 
+var commandLineArgs = require('command-line-args');
+
+var cli = commandLineArgs([{
+  name: 'file',
+  alias: 'f',
+  type: String,
+  defaultValue: ""
+}, {
+  name: 'section',
+  alias: 's',
+  type: String,
+  defaultValue: "default"
+}, {
+  name: 'path',
+  alias: 'p',
+  type: String,
+  defaultValue: "~/.edgerc"
+} ]);
+
+var options = cli.parse();
 
 console.log("Edgerc Generator!");
+console.log("Args: ", options);
