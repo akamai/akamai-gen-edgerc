@@ -21,5 +21,7 @@ var cliConfig = require('./cli-config');
 
 var args = cliConfig.getArguments();
 
-console.log("Edgerc Generator!");
-console.log("Args: ", args);
+if( args.help )
+{
+  console.log(cliConfig.getUsage());
+}

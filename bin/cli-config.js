@@ -22,24 +22,41 @@ var commandLineArgs = require('command-line-args');
 // Returns an object containing the parameters that were passed in
 // via the command line.
 exports.getArguments = function() {
-  // Configure accepted arguments
+  return createArguments().parse();  
+};
+
+// Returns a string containing the usage guidelines for the command line args
+exports.getUsage = function() {
+  return createArguments().getUsage();
+};
+
+// Create and return an instance of the CommandLineArgs object with the desired 
+// arguments specified.
+function createArguments() {
   var cli = commandLineArgs([{
     name: 'file',
     alias: 'f',
     type: String,
-    defaultValue: ""
+    defaultValue: "",
+    description: "Full path to the credentials file.",
+    required: true
   }, {
     name: 'section',
     alias: 's',
     type: String,
-    defaultValue: "default"
+    defaultValue: "default",
+    description: "Title of the section that will be added to the .edgerc file."
   }, {
     name: 'path',
     alias: 'p',
     type: String,
-    defaultValue: "~/.edgerc"
+    defaultValue: "~/.edgerc",
+    description: "Full path to the .edgerc file."
+  }, {
+    name: 'help',
+    alias: 'h',
+    description: "Display help and usage information."
   }]);
 
-  // Return the parse arguments
-  return cli.parse();
-};
+  return cli;
+}

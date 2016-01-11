@@ -1,20 +1,20 @@
 var cliConfig = require('../bin/cli-config'),
-  mocha = require('mocha'),
-  chai = require('chai'),
-  assert = require('chai').assert;
+    mocha = require('mocha'),
+    chai = require('chai'),
+    assert = require('chai').assert;
 
 // Expected default args object: 
 // { file: '', section: 'default', path: '~/.edgerc' }
 
 describe('cli-config', function() {
-  var args;
-
-  // Get arguments before starting tests
-  before(function() {
-    args = cliConfig.getArguments();
-  });
-
   describe("#getArguments()", function() {
+    var args;
+
+    // Get arguments before starting tests
+    before(function() {
+      args = cliConfig.getArguments();
+    });
+
     it("Should return an object containing properties 'file', 'section', and 'path'", function() {
       assert.isObject(args);
       assert.property(args, "file");
@@ -32,6 +32,18 @@ describe('cli-config', function() {
 
     it("Default value for 'path' property should be '~/.edgerc'", function() {
       assert.equal(args.path, "~/.edgerc");
+    });
+  });
+
+  describe("#getUsage", function() {
+    var usage;
+
+    before(function() {
+      usage = cliConfig.getUsage();
+    });
+
+    it("Should return a string containing the usage guidelines", function() {
+      assert.isString(usage);
     });
   });
 });
