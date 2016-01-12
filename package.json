@@ -25,7 +25,8 @@
     "gen-edgerc": "bin/gen-edgerc.js"
   },
   "dependencies": {
-    "command-line-args": "^2.1.4"
+    "command-line-args": "^2.1.4",
+    "prompt": "^0.2.14"
   },
   "devDependencies": {
     "mocha": "^2.3.4",

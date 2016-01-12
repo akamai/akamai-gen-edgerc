@@ -1,0 +1,14 @@
+Client Information
+
+Name: Sample Client
+Base URL: https://xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/
+
+Access Tokens:
+
+    akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+
+
+Client Credentials:
+
+    Client token: akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx     Secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=
+
