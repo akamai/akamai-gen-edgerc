@@ -23,17 +23,17 @@ var fs = require('fs');
  * [parseAuth Reads the client authorization file provided by path, 
  * parses its' contents, and returns an Array containing pertinent
  * values found in the file.]
- * @param  {[String]}   file        [Full path to the client authorization text file]
+ * @param  {[String]}   filePath    [Full path to the client authorization text file]
  * @param  {Function}   callback    [Callback method to accept the returned Array]
  * @return {[Array]}                [Array of field values found in the authorization file]
  *
  * Example authorization file can be found in test/data/sample-auth.txt
  */
-exports.parseAuth = function(file, callback) {
+exports.parseAuth = function(filePath, callback) {
   var fieldList;
   var fields = [];
 
-  fs.readFile(file, 'utf8', function(err, data) {
+  fs.readFile(filePath, 'utf8', function(err, data) {
     if (err) {
       return callback(err, null);
     }

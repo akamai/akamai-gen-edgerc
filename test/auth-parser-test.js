@@ -21,13 +21,15 @@ var authParser = require('../src/auth-parser');
 var mocha = require('mocha');
 var chai = require('chai');
 var assert = require('chai').assert;
+var path = require('path');
+var os = require('os');
 
 describe("auth-parser", function() {
   describe("#parseAuth()", function() {
     var authFieldsList;
 
     before(function(done) {
-      var authPath = process.cwd() + "/test/data/sample-auth.txt";
+      var authPath = path.join(__dirname, "/data/sample-auth.txt");
 
       authFieldsList = authParser.parseAuth(authPath, function(err, data) {
         if (err) throw err;
