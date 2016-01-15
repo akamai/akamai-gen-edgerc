@@ -1,0 +1,7 @@
+[default]
+client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=
+host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/
+access_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+client_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+client_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+max-body = 131072 
