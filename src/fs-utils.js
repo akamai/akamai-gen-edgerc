@@ -12,7 +12,8 @@ You may obtain a copy of the License at
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+WITHOUT WARRANTIES OR CON
+DITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 **/
@@ -26,7 +27,7 @@ var path = require('path');
  * @param   {String}    filePath  The full path to the file in question
  * @return  {Boolean}             Whether or not the file exists
  */
-exports.doesFileExist = function(filePath) {
+exports.fileExists = function(filePath) {
   try {
     return fs.statSync(filePath).isFile();
   } catch (err) {}
@@ -88,8 +89,7 @@ exports.readFile = function(filePath, callback) {
 };
 
 /**
- * Synchronously read the contents of a file and return the data, returninig 
- * `true` if successful and `false` if an error occurs.
+ * Synchronously reads the contents of a file and returns the data.
  * 
  * @param  {String}   filePath The full path to the file to be read
  * @param  {Function} callback Callback function that accepts an error and data 
@@ -97,13 +97,13 @@ exports.readFile = function(filePath, callback) {
  * @return {Boolean} 
  */
 exports.readFileSync = function(filePath) {
-  try {
-    fs.readFileSync(filePath, 'utf8');
-  } catch (err) {
-    return false;
-  }
+  var data;
 
-  return true;
+  try {
+    data = fs.readFileSync(filePath, 'utf8');
+  } catch (err) {}
+
+  return data;
 };
 
 /**
@@ -122,12 +122,14 @@ exports.writeFile = function(filePath, data, append, callback) {
       if (err) {
         return callback(err);
       }
+      return callback();
     });
   } else {
     fs.writeFile(filePath, data, 'utf8', function(err) {
       if (err) {
         return callback(err);
       }
+      return callback();
     });
   }
 };

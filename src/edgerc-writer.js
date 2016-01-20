@@ -19,18 +19,20 @@ limitations under the License.
 
 var path = require('path');
 var fs = require('fs');
+var fsUtils = require('./fs-utils');
 
 /**
- * writeEdgercParams Creates a new section in the .edgerc file or overwrites
- * an existing section if found, using the provided paremeter values to fill
- * in the properties of the section.
+ * Creates a new section in the .edgerc file or overwrites an existing 
+ * section if found, using the provided paremeter values to fill in the
+ * properties of the section.
  * @param  {String}     path        Full file path to the .edgerc file to write
- * @param  {String}     section     Title of the section to write to the .edgerc file
+ * @param  {String}     section     Title of the section to write to the .edgerc 
+ *                                  file
  * @param  {String}     host        Value of the host property
  * @param  {String}     secret      Value of the client_secret property
  * @param  {String}     accessToken Value of the accest_token property
  * @param  {String}     clientToken Value of the client_token property
- * @param  {Function}   callback    The callback to call when finished writing
+ * @param  {Function}   callback    The function to call when finished writing
  */
 exports.writeEdgercParams = function(
   path,
@@ -42,60 +44,73 @@ exports.writeEdgercParams = function(
   callback) {
 
   var fileData;
-
-  // Read the file at filepath
-  // fs.readFile(path, 'utf8', function(err, data) {
-  //   if (err && err.code == "ENOENT") {
-  //     // Create the data section and write the file. The file will be
-  //     // created automatically during write.
-  //     console.log("Do nothing, file will be created during write operation.");
-  //     console.log(err);
-  //   } else {
-  //     fileData = data;
-  //     console.log(".edgerc File Data: ", data);
-  //     callback(null, data);
-  //   }
-  // });
-
-  // Open file for reading and writing, creating it if it doesn't exist
-  fs.open(path, 'w+', function(err, fd) {
-    if (err) callback(err, null);
-    var block = createSectionBlock(section, host, secret, accessToken, clientToken);
-    var buf = new Buffer(block);
-    fs.write(fd, block, 0, block.length, null, function(err, written, buffer) {
-      if (err) throw err;
-      console.log(err, written, buffer);
-      fs.close(fd, function() {
-        console.log('Done');
-      });
-    });
-    callback(null, fd);
-  });
+  var block = this.createSectionBlock(
+    section,
+    host,
+    secret,
+    accessToken,
+    clientToken);
 
   // Check for existing section, notify user if overwriting
 
+  this.writeEdgercBlock(path, block, function(err, data) {
+    if (err) callback(err, null);
+    callback(null, data);
+  });
 };
 
 /**
- * [writeEdgercBlock Creates a new section in the .edgerc file or overwrites
- * an existing section if found, using the provided block as the value to be
- * written.]
- * @param  {[type]}   path     [description]
- * @param  {[type]}   block    [description]
- * @param  {Function} callback [description]
+ * Creates a new section in the .edgerc file or overwrites an existing section
+ * if found, using the provided block as the value to be written.
+ * 
+ * @param  {String}   path     Full file path to the .edgerc file to write
+ * @param  {String}   block    The section block to be written to the .edgerc
+ *                             file
+ * @param  {Function} callback Function to accept error and data info
  */
 exports.writeEdgercBlock = function(path, block, callback) {
+  // Create file if it does not exists
+  if (fsUtils.fileExists(path) === false) {
+    var fileCreated = fsUtils.createFileSync(path);
+    if (!fileCreated) callback(err, null);
+  }
 
+  // Write block to file
+  fsUtils.writeFile(path, block, false, function(err, data) {
+    if (err) callback(err, null);
+    callback(null, true);
+  });
 };
 
 
-
-function createSectionBlock(
+/**
+ * Creates a properly formatted .edgerc section string
+ * 
+ * @param  {String} section     The section title
+ * @param  {String} host        The host value
+ * @param  {String} secret      The secret value
+ * @param  {String} accessToken The access token value
+ * @param  {String} clientToken The client token value
+ * @return {String}             A properly formated section block ready to write
+ *                              to the .edgerc file
+ */
+exports.createSectionBlock = function(
   section,
   host,
   secret,
   accessToken,
   clientToken) {
+
+  // Example Section Block
+  // ==============================
+  // [default]
+  // client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=
+  // host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/
+  // access_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+  // client_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+  // client_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+  // max-body = 131072 
+
   var block = "";
   block += "[" + section + "]\n";
   block += "client_secret = " + secret + "\n";
@@ -105,11 +120,4 @@ function createSectionBlock(
   block += "client_token = " + clientToken + "\n";
   block += "max-body = 131072 \n\n";
   return block;
-}
-
-// [default]
-// client_secret = X6lpdoGBT3RnkF5BGTCVQq20lpTYsz1xFp43a7CDYgE=
-// host = akab-onuzphpk5jotmfmj-couz3cnikiderksx.luna.akamaiapis.net/
-// access_token = akab-km6yeorfbbmc6g2e-lz22p4nksvah5vhk
-// client_token = akab-zxhviyo3itu3dh4g-xubwmuzfq6veetfo
-// max-body = 131072
+};

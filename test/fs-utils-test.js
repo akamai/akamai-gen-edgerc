@@ -23,7 +23,7 @@ var chai = require('chai');
 var assert = require('chai').assert;
 var path = require('path');
 
-
+// Sample data block for writing tests
 var dataBlock = "[default]\n" +
   "client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=\n" +
   "host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/\n" +
@@ -31,7 +31,6 @@ var dataBlock = "[default]\n" +
   "client_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx\n" +
   "client_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx\n" +
   "max-body = 131072 \n\n";
-
 
 describe("fs-utils", function() {
   var testEdgerc;
@@ -44,27 +43,27 @@ describe("fs-utils", function() {
   });
 
   ///////////////////////////
-  // DOESFILEEXIST
+  // fileExists
   ///////////////////////////
-  describe("#doesFileExist()", function() {
+  describe("#fileExists()", function() {
     it("Returns false if file does not exist", function() {
-      assert.isFalse(fsUtils.doesFileExist(testEdgerc));
+      assert.isFalse(fsUtils.fileExists(testEdgerc));
     });
 
     it("Returns true if file does exist", function() {
       fsUtils.createFileSync(testEdgerc);
-      assert.isTrue(fsUtils.doesFileExist(testEdgerc));
+      assert.isTrue(fsUtils.fileExists(testEdgerc));
     });
   });
 
   ///////////////////////////
-  // CREATEFILE
+  // createFile
   ///////////////////////////
   describe("#createFile()", function() {
     it("Returns file data if the file is created succesfully", function(done) {
       fsUtils.createFile(testEdgerc, function(err, data) {
         if (err) {
-          console.log("Error creating file: ", err);
+          assert.fail(err);
         } else if (data) {
           assert.isOk(data);
           done();
@@ -83,7 +82,7 @@ describe("fs-utils", function() {
   });
 
   ///////////////////////////
-  // CREATEFILESYNC
+  // createFileSync
   ///////////////////////////
   describe("#createFileSync()", function() {
     it("Returns true if the file is created succesfully", function() {
@@ -92,6 +91,99 @@ describe("fs-utils", function() {
 
     it("Returns false if an error is received during file creation", function() {
       assert.isFalse(fsUtils.createFileSync(''));
+    });
+  });
+
+  ///////////////////////////
+  // readFile
+  ///////////////////////////
+  describe("#readFile()", function() {
+
+    it("Returns file data if the file is read succesfully and it contains data", function(done) {
+      fsUtils.createFileSync(testEdgerc);
+      fsUtils.writeFileSync(testEdgerc, dataBlock);
+
+      fsUtils.readFile(testEdgerc, function(err, data) {
+        if (err) {
+          assert.fail(err);
+        } else if (data) {
+          assert.equal(data, dataBlock);
+          done();
+        }
+      });
+    });
+
+    it("Returns an error if an error is received during file read", function(done) {
+      fsUtils.readFile('', function(err, data) {
+        if (err) {
+          assert.typeOf(err, 'error');
+          done();
+        }
+      });
+    });
+  });
+
+  ///////////////////////////
+  // readFileSync
+  ///////////////////////////
+  describe("#readFileSync()", function() {
+    it("Returns data if the file is read succesfully", function() {
+      fsUtils.createFileSync(testEdgerc);
+      assert.isDefined(fsUtils.readFileSync(testEdgerc));
+    });
+
+    it("Returns nothing if an error is received during file read", function() {
+      assert.isUndefined(fsUtils.readFileSync(''));
+    });
+  });
+
+  ///////////////////////////
+  // writeFile
+  ///////////////////////////
+  describe("#writeFile()", function() {
+    beforeEach(function() {
+      fsUtils.createFileSync(testEdgerc);
+    });
+
+    it("Returns nothing if file is written succesfully", function(done) {
+      fsUtils.writeFile(testEdgerc, dataBlock, false, function(err) {
+        if (err) {
+          assert.fail(err);
+        }
+
+        assert.isUndefined(err);
+        done();
+      });
+    });
+
+    it("Succesfully writes data to the file", function(done) {
+
+      // Write data block to the file
+      fsUtils.writeFile(testEdgerc, dataBlock, false, function(err) {
+        if (err) {
+          assert.fail(err);
+        } else {
+          // Verify data was written as expected
+          var readData = fsUtils.readFileSync(testEdgerc);
+          // console.log("Read Data: ", readData);
+          assert.equal(readData, dataBlock);
+          done();
+        }
+      });
+    });
+
+    ///////////////////////////
+    // writeFileSync
+    ///////////////////////////
+    describe("#writeFileSync()", function() {
+      it("Returns true if the file is read succesfully", function() {
+        fsUtils.createFileSync(testEdgerc);
+        assert.isTrue(fsUtils.writeFileSync(testEdgerc));
+      });
+
+      it("Returns false if an error is received during file read", function() {
+        assert.isFalse(fsUtils.writeFileSync(''));
+      });
     });
   });
 });
