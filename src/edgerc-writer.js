@@ -18,8 +18,7 @@ limitations under the License.
 **/
 
 var path = require('path');
-var fs = require('fs');
-var fsUtils = require('./fs-utils');
+var fs = require('fs-extra');
 var ini = require('ini');
 
 /**

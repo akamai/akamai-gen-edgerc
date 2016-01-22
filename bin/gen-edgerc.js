@@ -19,7 +19,7 @@ limitations under the License.
 
 var cliConfig = require('../src/cli-config'),
   prompt = require('prompt'),
-  fs = require('fs');
+  fs = require('fs-extra');
 
 var args = cliConfig.getArguments();
 
