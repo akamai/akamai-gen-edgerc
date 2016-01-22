@@ -20,6 +20,7 @@ limitations under the License.
 var path = require('path');
 var fs = require('fs');
 var fsUtils = require('./fs-utils');
+var ini = require('ini');
 
 /**
  * Creates a new section in the .edgerc file or overwrites an existing 
@@ -51,7 +52,14 @@ exports.writeEdgercParams = function(
     accessToken,
     clientToken);
 
+  // Read .edgerc file
+  var edgercData = ini.parse(fs.readFileSync(path, 'utf-8'));
+  console.log(edgercData);
+
   // Check for existing section, notify user if overwriting
+  if (edgercData[section]) {
+    console.log("Section [" + section + "] already exists and will be updated.");
+  }
 
   this.writeEdgercBlock(path, block, function(err, data) {
     if (err) callback(err, null);
