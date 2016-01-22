@@ -52,15 +52,6 @@ exports.writeEdgercParams = function(
     accessToken,
     clientToken);
 
-  // Read .edgerc file
-  var edgercData = ini.parse(fs.readFileSync(path, 'utf-8'));
-  console.log(edgercData);
-
-  // Check for existing section, notify user if overwriting
-  if (edgercData[section]) {
-    console.log("Section [" + section + "] already exists and will be updated.");
-  }
-
   this.writeEdgercBlock(path, block, function(err, data) {
     if (err) callback(err, null);
     callback(null, data);
@@ -83,6 +74,15 @@ exports.writeEdgercBlock = function(path, block, callback) {
     if (!fileCreated) callback(err, null);
   }
 
+  // Read .edgerc file
+  var edgercData = ini.parse(fs.readFileSync(path, 'utf-8'));
+  console.log(edgercData);
+
+  // Check for existing section, notify user if overwriting
+  if (edgercData[section]) {
+    console.log("Section [" + section + "] already exists and will be updated.");
+  }
+
   // Write block to file
   fsUtils.writeFile(path, block, false, function(err, data) {
     if (err) callback(err, null);
@@ -92,40 +92,29 @@ exports.writeEdgercBlock = function(path, block, callback) {
 
 
 /**
- * Creates a properly formatted .edgerc section string
+ * Creates a properly formatted .edgerc section Object
  * 
  * @param  {String} section     The section title
  * @param  {String} host        The host value
  * @param  {String} secret      The secret value
  * @param  {String} accessToken The access token value
  * @param  {String} clientToken The client token value
- * @return {String}             A properly formated section block ready to write
- *                              to the .edgerc file
+ * @param  {String} max-body    The max body value
+ * @return {String}             A properly formatted section block Object
  */
 exports.createSectionBlock = function(
   section,
   host,
   secret,
   accessToken,
-  clientToken) {
+  clientToken,
+  maxBody) {
 
-  // Example Section Block
-  // ==============================
-  // [default]
-  // client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=
-  // host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/
-  // access_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
-  // client_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
-  // client_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
-  // max-body = 131072 
-
-  var block = "";
-  block += "[" + section + "]\n";
-  block += "client_secret = " + secret + "\n";
-  block += "host = " + host + "\n";
-  block += "access_token = " + accessToken + "\n";
-  block += "client_token = " + clientToken + "\n";
-  block += "client_token = " + clientToken + "\n";
-  block += "max-body = 131072 \n\n";
-  return block;
+  var section = {};
+  section.client_secret = secret;
+  section.host = host;
+  section.access_token = accessToken;
+  section.client_token = clientToken;
+  section["max-body"] = maxBody ? maxBody : "131072";
+  return section;
 };
