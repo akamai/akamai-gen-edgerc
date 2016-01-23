@@ -20,119 +20,156 @@ limitations under the License.
 var edgercWriter = require('../src/edgerc-writer');
 var mocha = require('mocha');
 var chai = require('chai');
+chai.use(require('chai-fs'));
 var assert = require('chai').assert;
 var path = require('path');
 var os = require('os');
 var fs = require('fs-extra');
-
-// Sample section block to use for testing
-var sectionBlock = "[default]\n" +
-  "client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=\n" +
-  "host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/\n" +
-  "access_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx\n" +
-  "client_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx\n" +
-  "client_token = akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx\n" +
-  "max-body = 131072 \n\n";
+var ini = require('ini');
 
 var sectionObj = {
-  "client_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=",
-  "host": "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/",
-  "access_token": "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
-  "client_token": "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
-  "max-body": "131072"
+  "default": {
+    "access_token": "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+    "client_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=",
+    "client_token": "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+    "host": "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/",
+    "max-body": "131072"
+  }
 };
 
-
 describe("edgerc-writer", function() {
-      var testEdgerc = path.join(__dirname, "/data/.edgercTest");
-      var edgercPath = path.join(__dirname, "/data/.edgerc");
-      var section = "default";
-      var host = "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/";
-      var secret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=";
-      var accessToken = "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx";
-      var clientToken = "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx";
+  var testEdgerc = path.join(__dirname, "/data/.edgercTest");
+  var edgercPath = path.join(__dirname, "/data/.edgerc");
+  var section = "default";
+  var host = "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/";
+  var hostUpdate = "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.update.akamaiapis.net/";
+  var secret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=";
+  var accessToken = "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx";
+  var clientToken = "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx";
+  var maxBody = "131072"
+  var maxBodyCustom = "123456"
 
-      ///////////////////////////
-      // createSectionBlock
-      ///////////////////////////
-      describe("#createSectionBlock()", function() {
-        it("Returns a properly formatted section block string.",
-          function() {
-            var block = edgercWriter.createSectionBlock(
-              section,
-              host,
-              secret,
-              accessToken,
-              clientToken);
+  ///////////////////////////
+  // writeEdgercSection
+  ///////////////////////////
+  describe("#writeEdgercSection()", function() {
 
-            assert.isObject(block);
-            assert.deepEqual(block, sectionObj);
-          });
+
+    beforeEach(function() {
+      // Remove .edgerc file
+      fs.removeSync(testEdgerc);
+    });
+
+    it("Creates an .edgerc file if it does not exist.",
+      function() {
+        // File does not exist
+        // assert.notIsFile does not seem to be functioning properly
+        // commenting out until his is fixed.
+        // https://github.com/Bartvds/chai-fs/issues/9
+        // 
+        // assert.notIsFile(testEdgerc, "File does not exist.");
+
+        // Call writeEdgercParam which should create the file
+        callCreateSectionObj();
+
+        // File exists
+        assert.isFile(testEdgerc, "File was created.");
+      });
+
+    it("Adds a new section to the .edgerc file.",
+      function() {
+        // Create new section
+        callCreateSectionObj();
+
+        // Compare newly created section obj to exemplar
+        var edgercObj = ini.parse(fs.readFileSync(testEdgerc, 'utf-8'));
+        assert.deepEqual(edgercObj, sectionObj);
+      });
+
+    it("Updates an existing section of the .edgerc file.",
+      function() {
+        // Created section "default"
+        callCreateSectionObj();
+
+        // Update  section "default"
+        edgercWriter.writeEdgercSection(
+          testEdgerc,
+          section,
+          hostUpdate,
+          secret,
+          accessToken,
+          clientToken,
+          maxBody);
+
+        // Check that the host property matches the updated value
+        var edgercObj = ini.parse(fs.readFileSync(testEdgerc, 'utf-8'));
+        assert.equal(edgercObj.default.host, hostUpdate);
+      });
+
+    it("Uses default max-body value if none provided.",
+      function() {
+        // Create new section
+        edgercWriter.writeEdgercSection(
+          testEdgerc,
+          section,
+          host,
+          secret,
+          accessToken,
+          clientToken);
+
+        // Compare newly created section obj to exemplar
+        var edgercObj = ini.parse(fs.readFileSync(testEdgerc, 'utf-8'));
+        assert.equal(edgercObj.default["max-body"], maxBody);
+      });
+
+    it("Uses provided max-body value if provided.",
+      function() {
+        // Create new section
+        edgercWriter.writeEdgercSection(
+          testEdgerc,
+          section,
+          host,
+          secret,
+          accessToken,
+          clientToken,
+          maxBodyCustom);
+
+        // Compare newly created section obj to exemplar
+        var edgercObj = ini.parse(fs.readFileSync(testEdgerc, 'utf-8'));
+        assert.equal(edgercObj.default["max-body"], maxBodyCustom);
       });
 
 
-      ///////////////////////////
-      // writeEdgercParams
-      ///////////////////////////
-      describe("#writeEdgercParams()", function() {
+    function callCreateSectionObj() {
+      edgercWriter.writeEdgercSection(
+        testEdgerc,
+        section,
+        host,
+        secret,
+        accessToken,
+        clientToken,
+        maxBody);
+    }
 
-
-          beforeEach(function() {
-            // Remove section from .edgerc if it exists
-            // edgercWriter.writeEdgercParams(
-            //   edgercPath,
-            //   section,
-            //   host,
-            //   secret,
-            //   accessToken,
-            //   clientToken,
-            //   function(err, data) {
-            //     if (err) throw err;
-            //     console.log(data);
-            //   });
-          });
-
-          // it("Creates an .edgerc file if it does not exist.",
+    // it("Writes a section block to the .edgerc file.",
     //   function(done) {
-    //     // Remove .edgerc test file if it exists
-    //     fsUtils.removeFile(testEdgerc);
-    //     assert.isFalse(fsUtils.fileExists(testEdgerc));
-
-    //     // Call writeEdgercParam which should create the file
-    //     edgercWriter.writeEdgercParams(
+    //     edgercWriter.writeEdgercSection(
     //       testEdgerc,
     //       section,
     //       host,
     //       secret,
     //       accessToken,
     //       clientToken,
+    //       null,
     //       function(err, data) {
     //         if (err) assert.fail(error);
-    //         assert.isTrue(fsUtils.fileExists(testEdgerc));
+
+    //         // Verify block was written
+    //         var readBlock = fsUtils.readFileSync(testEdgerc);
+    //         assert.equal(readBlock, sectionBlock);
     //         done();
     //       });
-
     //   });
-
-
-          // it("Writes a section block to the .edgerc file.",
-          //   function(done) {
-          //     edgercWriter.writeEdgercParams(
-          //       testEdgerc,
-          //       section,
-          //       host,
-          //       secret,
-          //       accessToken,
-          //       clientToken,
-          //       function(err, data) {
-          //         if (err) assert.fail(error);
-
-          //         // Verify block was written
-          //         var readBlock = fsUtils.readFileSync(testEdgerc);
-          //         assert.equal(readBlock, sectionBlock);
-          //         done();
-          //       });
-          //   });
-          // });
-      });
+    // });
+  });
 });

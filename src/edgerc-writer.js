@@ -26,69 +26,56 @@ var ini = require('ini');
  * section if found, using the provided paremeter values to fill in the
  * properties of the section.
  * @param  {String}     path        Full file path to the .edgerc file to write
- * @param  {String}     section     Title of the section to write to the .edgerc 
+ * @param  {String}     title       Title of the section to write to the .edgerc 
  *                                  file
  * @param  {String}     host        Value of the host property
  * @param  {String}     secret      Value of the client_secret property
  * @param  {String}     accessToken Value of the accest_token property
  * @param  {String}     clientToken Value of the client_token property
- * @param  {Function}   callback    The function to call when finished writing
+ * @param  {String}     maxBody     Value of the max-body property
  */
-exports.writeEdgercParams = function(
+exports.writeEdgercSection = function(
   path,
-  section,
+  title,
   host,
   secret,
   accessToken,
   clientToken,
-  callback) {
+  maxBody) {
 
-  var fileData;
-  var block = this.createSectionBlock(
-    section,
+  // Ensure .edgerc file exists, creating it if not
+  // fs.ensureFile(path, function(err) {
+  //   console.log("Error:", err);
+  //   console.log("ensureFileSynce()");
+  // });
+
+  try {
+    fs.ensureFileSync(path);
+  } catch (err) {
+    console.log("EnsureFileSync()");
+    console.log(err);
+  }
+
+
+  // Read the .edgerc file and parse as an ini Object
+  var edgercObj = ini.parse(fs.readFileSync(path, 'utf-8'));
+
+  // Create section Object
+  var sectionObj = createSectionObj(
     host,
     secret,
     accessToken,
-    clientToken);
+    clientToken,
+    maxBody);
 
-  this.writeEdgercBlock(path, block, function(err, data) {
-    if (err) callback(err, null);
-    callback(null, data);
-  });
+  // Add or update section data to the .edgerc ini Object
+  edgercObj = addSection(edgercObj, title, sectionObj);
+
+  // Write the .edgerc ini data back to the file
+  fs.writeFileSync(path, ini.encode(edgercObj, {
+    "whitespace": true
+  }));
 };
-
-/**
- * Creates a new section in the .edgerc file or overwrites an existing section
- * if found, using the provided block as the value to be written.
- * 
- * @param  {String}   path     Full file path to the .edgerc file to write
- * @param  {String}   block    The section block to be written to the .edgerc
- *                             file
- * @param  {Function} callback Function to accept error and data info
- */
-exports.writeEdgercBlock = function(path, block, callback) {
-  // Create file if it does not exists
-  if (fsUtils.fileExists(path) === false) {
-    var fileCreated = fsUtils.createFileSync(path);
-    if (!fileCreated) callback(err, null);
-  }
-
-  // Read .edgerc file
-  var edgercData = ini.parse(fs.readFileSync(path, 'utf-8'));
-  console.log(edgercData);
-
-  // Check for existing section, notify user if overwriting
-  if (edgercData[section]) {
-    console.log("Section [" + section + "] already exists and will be updated.");
-  }
-
-  // Write block to file
-  fsUtils.writeFile(path, block, false, function(err, data) {
-    if (err) callback(err, null);
-    callback(null, true);
-  });
-};
-
 
 /**
  * Creates a properly formatted .edgerc section Object
@@ -101,8 +88,7 @@ exports.writeEdgercBlock = function(path, block, callback) {
  * @param  {String} max-body    The max body value
  * @return {String}             A properly formatted section block Object
  */
-exports.createSectionBlock = function(
-  section,
+function createSectionObj(
   host,
   secret,
   accessToken,
@@ -116,4 +102,18 @@ exports.createSectionBlock = function(
   section.client_token = clientToken;
   section["max-body"] = maxBody ? maxBody : "131072";
   return section;
-};
+}
+
+/**
+ * Adds a new section or updates an existing section of the supplied ini Object
+ * 
+ * @param {Object} iniObj      An Object representing the data in the .edgerc
+ *                             file
+ * @param {String} sectionName The name of the section to add or update
+ * @param {Object} sectionObj  An Object representing the data to be written to
+ *                             the ini object.
+ */
+function addSection(iniObj, sectionName, sectionObj) {
+  iniObj[sectionName] = sectionObj;
+  return iniObj;
+}

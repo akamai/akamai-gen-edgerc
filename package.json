@@ -31,7 +31,8 @@
     "prompt": "^0.2.14"
   },
   "devDependencies": {
-    "mocha": "^2.3.4",
-    "chai": "^3.4.1"
+    "chai": "^3.4.1",
+    "chai-fs": "^0.1.0",
+    "mocha": "^2.3.4"
   }
 }
