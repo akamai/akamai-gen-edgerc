@@ -43,19 +43,8 @@ exports.writeEdgercSection = function(
   clientToken,
   maxBody) {
 
-  // Ensure .edgerc file exists, creating it if not
-  // fs.ensureFile(path, function(err) {
-  //   console.log("Error:", err);
-  //   console.log("ensureFileSynce()");
-  // });
-
-  try {
-    fs.ensureFileSync(path);
-  } catch (err) {
-    console.log("EnsureFileSync()");
-    console.log(err);
-  }
-
+  // Ensure .edgerc file exists, creating it if not;
+  fs.ensureFileSync(path);
 
   // Read the .edgerc file and parse as an ini Object
   var edgercObj = ini.parse(fs.readFileSync(path, 'utf-8'));

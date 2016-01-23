@@ -54,6 +54,11 @@ exports.parseAuth = function(filePath, callback) {
       i++;
     }
 
+    // Strip 'https://' from host property
+    if (fields["URL:"]) {
+      fields["URL:"] = fields["URL:"].replace('https://', '');
+    }
+
     return callback(null, fields);
   });
 };

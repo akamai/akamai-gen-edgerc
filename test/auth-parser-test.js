@@ -27,10 +27,9 @@ var os = require('os');
 describe("auth-parser", function() {
   describe("#parseAuth()", function() {
     var authFieldsList;
+    var authPath = path.join(__dirname, "/data/sample-auth.txt");
 
     before(function(done) {
-      var authPath = path.join(__dirname, "/data/sample-auth.txt");
-
       authFieldsList = authParser.parseAuth(authPath, function(err, data) {
         if (err) throw err;
         authFieldsList = data;
@@ -46,6 +45,10 @@ describe("auth-parser", function() {
       assert.property(authFieldsList, "URL:");
       assert.isDefined(authFieldsList['URL:']);
       assert.isString(authFieldsList['URL:']);
+    });
+
+    it("The 'URL:' property should not contain 'https://' as part of its' value.", function() {
+      assert.notInclude(authFieldsList["URL:"], 'https://');
     });
 
     it("Should contain property 'Tokens:' with a String for a value.", function() {
