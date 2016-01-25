@@ -47,14 +47,14 @@ function init() {
       writeEdgerc(data, function(err) {
         if (err) {
           if (err.errno == -13) {
-            console.log("Unable to access " + err.path + ". Please make sure you " +
+            console.warn("Unable to access " + err.path + ". Please make sure you " +
               "have permission to access this file or perhaps try running the " +
               "command as sudo.");
             process.exit(0);
           }
         }
-        console.log("Your .edgerc has been updated succesfully.");
-      })
+        console.log("The section [" + args.section + "] has been succesfully added to " + args.path + "\n");
+      });
     });
   });
 }
@@ -73,6 +73,7 @@ function getClientAuth(callback) {
   // Read the client authorization file. If not found, notify user.
   if (args.file) {
     clientAuthData = fs.readFileSync(args.file, 'utf8');
+    console.log("+++ Found authorization file: " + args.file);
     callback(clientAuthData);
   } else {
     // Present user with input dialogue requesting copy and paste of
@@ -84,9 +85,9 @@ function getClientAuth(callback) {
       output: process.stdout
     });
 
-    var msg = "After authorizing your client in the OPEN API Administration \n" +
-      "tool, export the credentials and paste the contents of the export file \n" +
-      "below, followed by control-D: ";
+    var msg = "After authorizing your client in the OPEN API Administration " +
+      "tool, \nexport the credentials and paste the contents of the export file " +
+      "below. \nThen enter control-D to continue: \n\n>>>\n";
 
     rl.setPrompt(msg);
     rl.prompt();
@@ -96,6 +97,12 @@ function getClientAuth(callback) {
     });
 
     rl.on('close', function(cmd) {
+      if (input.length < 1) {
+        // Data was not input, assumed early exit from the program.
+        console.log("Kill command received without input. Exiting program.");
+        process.exit(9);
+      }
+      console.log("\n<<<\n\n");
       clientAuthData = input.join('\n');
       callback(clientAuthData);
     });
