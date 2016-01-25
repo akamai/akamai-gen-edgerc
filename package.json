@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "A command-line tool for creating and adding sections to an Akamai .edgerc file.",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "gen_edgerc"
   },
   "repository": {
     "type": "git",
@@ -22,7 +23,7 @@
   "homepage": "https://github.com/akamai-open/akamai-gen-edgerc#readme",
   "preferGlobal": true,
   "bin": {
-    "gen-edgerc": "bin/gen-edgerc.js"
+    "gen_edgerc": "bin/gen-edgerc.js"
   },
   "dependencies": {
     "command-line-args": "^2.1.4",
