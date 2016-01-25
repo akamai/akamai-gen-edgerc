@@ -21,6 +21,7 @@ var cliConfig = require('../src/cli-config');
 var mocha = require('mocha');
 var chai = require('chai');
 var assert = require('chai').assert;
+var os = require('os');
 
 // Expected default args object: 
 // { file: '', section: 'default', path: '~/.edgerc' }
@@ -49,8 +50,8 @@ describe('cli-config', function() {
       assert.equal(args.section, "default");
     });
 
-    it("Default value for 'path' property should be '~/.edgerc'", function() {
-      assert.equal(args.path, "~/.edgerc");
+    it("Default value for 'path' property should be 'users_home_dir/.edgerc'", function() {
+      assert.equal(args.path, os.homedir() + "/.edgerc");
     });
   });
 

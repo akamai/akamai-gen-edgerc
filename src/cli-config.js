@@ -18,11 +18,12 @@ limitations under the License.
 **/
 
 var commandLineArgs = require('command-line-args');
+var os = require('os');
 
 // Returns an object containing the parameters that were passed in
 // via the command line.
 exports.getArguments = function() {
-  return createArguments().parse();  
+  return createArguments().parse();
 };
 
 // Returns a string containing the usage guidelines for the command line args
@@ -50,7 +51,7 @@ function createArguments() {
     name: 'path',
     alias: 'p',
     type: String,
-    defaultValue: "~/.edgerc",
+    defaultValue: os.homedir() + "/.edgerc",
     description: "Full path to the .edgerc file."
   }, {
     name: 'help',
