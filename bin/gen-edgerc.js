@@ -17,46 +17,124 @@ See the License for the specific language governing permissions and
 limitations under the License.
 **/
 
-var cliConfig = require('../src/cli-config'),
-  prompt = require('prompt'),
-  fs = require('fs-extra');
+var cliConfig = require('../src/cli-config');
+var authParser = require('../src/auth-parser');
+var edgercWriter = require('../src/edgerc-writer');
+var prompt = require('prompt');
+var fs = require('fs-extra');
+var readline = require('readline');
 
-var args = cliConfig.getArguments();
+var clientAuthData;
+var clientAuthParsed;
+var args;
 
-// If help argument was listed, supply usage info
-if (args.help) {
-  console.log(cliConfig.getUsage());
+/**
+ * Initialize the script, setting up default values, and prepping the
+ * CLI params.
+ */
+function init() {
+  // Retrieve any arguments passed in via the command line
+  args = cliConfig.getArguments();
+
+  // Supply usage info if help argument was passed
+  if (args.help) {
+    console.log(cliConfig.getUsage());
+    process.exit(0);
+  }
+
+  getClientAuth(function(data) {
+    parseClientAuth(data, function(err, data) {
+      writeEdgerc(data, function(err) {
+        if (err) {
+          if (err.errno == -13) {
+            console.log("Unable to access " + err.path + ". Please make sure you " +
+              "have permission to access this file or perhaps try running the " +
+              "command as sudo.");
+            process.exit(0);
+          }
+        }
+        console.log("Your .edgerc has been updated succesfully.");
+      })
+    });
+  });
 }
 
+init();
 
-// Check existance of ~/.edgerc. If it does not exist, create it
-// Open file stream to ~/.edgerc
-// 
+/**
+ * Gets the client authorization data by either reading the file path
+ * passed in by the user or requesting the user to copy and paste the
+ * data directly into the command line.
+ * 
+ * @param  {Function} callback Callback function accepting a data param 
+ *                             which will be called once the data is ready.
+ */
+function getClientAuth(callback) {
+  // Read the client authorization file. If not found, notify user.
+  if (args.file) {
+    clientAuthData = fs.readFileSync(args.file, 'utf8');
+    callback(clientAuthData);
+  } else {
+    // Present user with input dialogue requesting copy and paste of
+    // client auth data.
+    var input = [];
 
+    var rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
 
+    var msg = "After authorizing your client in the OPEN API Administration \n" +
+      "tool, export the credentials and paste the contents of the export file \n" +
+      "below, followed by control-D: ";
 
+    rl.setPrompt(msg);
+    rl.prompt();
 
+    rl.on('line', function(cmd) {
+      input.push(cmd);
+    });
 
-// prompt.message = "#";
-// prompt.delimiter = " ";
-// prompt.start();
+    rl.on('close', function(cmd) {
+      clientAuthData = input.join('\n');
+      callback(clientAuthData);
+    });
+  }
+}
 
-// prompt.get({
-//       properties: {
-//         authorization: {
-//           description: "After authorizing your client in the OPEN API Administration tool,\n export the credentials and paste the contents of the export file below, \n then hit Enter.\n"
-//         }
-//       }
-//     }, function(err, result) {
-//       if (err) {
-//         return onErr(err);
-//       }
-//       console.log('Command-line input received:');
-//       console.log('  Auth: ' + result.authorization);
-//     });
+/**
+ * Parses the client authorization file.
+ * 
+ * @param  {String}   data     Parsed array of client authorization data
+ * @param  {Function} callback Callback function accepting an error parameter
+ */
+function parseClientAuth(data, callback) {
+  authParser.parseAuth(data, function(err, data) {
+    if (err) callback(err, null);
+    callback(null, data);
+  });
+}
 
+/**
+ * Writes the parsed client auth data to the .edgerc file.
+ * 
+ * @param  {Array}   data       Array of parsed client auth data
+ * @param  {Function} callback  unction to receive errors and handle completion
+ */
+function writeEdgerc(data, callback) {
+  try {
+    edgercWriter.writeEdgercSection(
+      args.path,
+      args.section,
+      data["URL:"],
+      data["Secret:"],
+      data["Tokens:"],
+      data["token:"],
+      data["max-body"]
+    );
+  } catch (err) {
+    callback(err);
+  }
 
-//     function onErr(err) {
-//       console.log(err);
-//       return 1;
-//     }
+  return callback();
+}
