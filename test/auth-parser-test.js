@@ -23,21 +23,25 @@ var chai = require('chai');
 var assert = require('chai').assert;
 var path = require('path');
 var os = require('os');
+var fs = require('fs-extra');
 
 describe("auth-parser", function() {
   describe("#parseAuth()", function() {
     var authFieldsList;
     var authPath = path.join(__dirname, "/data/sample-auth.txt");
+    var authData = fs.readFileSync(authPath, 'utf8');
 
     before(function(done) {
-      authFieldsList = authParser.parseAuth(authPath, function(err, data) {
+      console.log("Auth Data: ", authData);
+      authParser.parseAuth(authData, function(err, data) {
         if (err) throw err;
         authFieldsList = data;
+        console.log(authFieldsList);
         done();
       });
     });
 
-    it("Should return an array of data parsed from a client authorization file.", function() {
+    it("Should return an array of data parsed from a client authorization data.", function() {
       assert.isArray(authFieldsList);
     });
 
