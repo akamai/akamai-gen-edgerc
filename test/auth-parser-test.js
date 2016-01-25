@@ -32,11 +32,9 @@ describe("auth-parser", function() {
     var authData = fs.readFileSync(authPath, 'utf8');
 
     before(function(done) {
-      console.log("Auth Data: ", authData);
       authParser.parseAuth(authData, function(err, data) {
         if (err) throw err;
         authFieldsList = data;
-        console.log(authFieldsList);
         done();
       });
     });
