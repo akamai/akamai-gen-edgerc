@@ -75,7 +75,7 @@ init();
  */
 function getClientAuth(callback) {
   console.log("This script will create a section named '" + args.section + "'" +
-    "in the local " + args.path + " file.\n");
+    "in the local file " + args.path + ".\n");
 
   // Read the client authorization file. If not found, notify user.
   if (args.file) {
