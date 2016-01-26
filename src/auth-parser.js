@@ -51,9 +51,9 @@ exports.parseAuth = function(authData, callback) {
 
   // Simple test to make sure the data is what we expected
   if (!validateData(fieldList)) {
-    console.warn("Invalid client authorization data received. \nPlease make sure " +
-      "that you have provided valid client authorization data and try again.");
-    process.exit(0);
+    var msg = "Invalid client authorization data received. \nPlease make sure " +
+      "that you have provided valid client authorization data and try again.";
+    callback(new Error(msg), null);
   }
 
   // Strip 'https://' from host property
@@ -65,7 +65,6 @@ exports.parseAuth = function(authData, callback) {
 };
 
 function validateData(data) {
-  data.indexOf("")
   if (
     data.indexOf("URL:") == -1 ||
     data.indexOf("Secret:") == -1 ||

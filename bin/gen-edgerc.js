@@ -44,16 +44,20 @@ function init() {
 
   getClientAuth(function(data) {
     parseClientAuth(data, function(err, data) {
+      if (err) {
+        console.error(err.message);
+        process.exit(0);
+      }
       writeEdgerc(data, function(err) {
         if (err) {
           if (err.errno == -13) {
-            console.warn("Unable to access " + err.path + ". Please make sure you " +
+            console.error("Unable to access " + err.path + ". Please make sure you " +
               "have permission to access this file or perhaps try running the " +
               "command as sudo.");
             process.exit(0);
           }
         }
-        console.log("The section [" + args.section + "] has been succesfully added to " + args.path + "\n");
+        console.log("The section '" + args.section + "' has been succesfully added to " + args.path + "\n");
       });
     });
   });
@@ -70,6 +74,9 @@ init();
  *                             which will be called once the data is ready.
  */
 function getClientAuth(callback) {
+  console.log("This script will create a section named '" + args.section + "'" +
+    "in the local " + args.path + " file.\n");
+
   // Read the client authorization file. If not found, notify user.
   if (args.file) {
     clientAuthData = fs.readFileSync(args.file, 'utf8');
@@ -87,7 +94,8 @@ function getClientAuth(callback) {
 
     var msg = "After authorizing your client in the OPEN API Administration " +
       "tool, \nexport the credentials and paste the contents of the export file " +
-      "below. \nThen enter control-D to continue: \n\n>>>\n";
+      "below (making sure to include the final blank line). \nThen enter " +
+      "control-D to continue: \n\n>>>\n";
 
     rl.setPrompt(msg);
     rl.prompt();
@@ -100,7 +108,7 @@ function getClientAuth(callback) {
       if (input.length < 1) {
         // Data was not input, assumed early exit from the program.
         console.log("Kill command received without input. Exiting program.");
-        process.exit(9);
+        process.exit(0);
       }
       console.log("\n<<<\n\n");
       clientAuthData = input.join('\n');
