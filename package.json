@@ -4,7 +4,8 @@
   "description": "A command-line tool for creating and adding sections to an Akamai .edgerc file.",
   "scripts": {
     "test": "mocha",
-    "start": "gen_edgerc"
+    "start": "gen_edgerc",
+    "readme": "node ./node_modules/.bin/node-readme"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,7 @@
     "chai": "^3.4.1",
     "chai-fs": "^0.1.0",
     "concat-stream": "^1.5.1",
-    "mocha": "^2.3.4"
+    "mocha": "^2.3.4",
+    "node-readme": "^0.1.9"
   }
 }

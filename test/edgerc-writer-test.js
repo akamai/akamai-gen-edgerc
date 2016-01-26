@@ -46,8 +46,8 @@ describe("edgerc-writer", function() {
   var secret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=";
   var accessToken = "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx";
   var clientToken = "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx";
-  var maxBody = "131072"
-  var maxBodyCustom = "123456"
+  var maxBody = "131072";
+  var maxBodyCustom = "123456";
 
   ///////////////////////////
   // writeEdgercSection
