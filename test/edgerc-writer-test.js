@@ -32,7 +32,7 @@ var sectionObj = {
     "access_token": "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
     "client_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=",
     "client_token": "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
-    "host": "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/",
+    "host": "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net",
     "max-body": "131072"
   }
 };
@@ -42,7 +42,7 @@ describe("edgerc-writer", function() {
   var edgercPath = path.join(__dirname, "/data/.edgerc");
   var section = "default";
   var host = "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/";
-  var hostUpdate = "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.update.akamaiapis.net/";
+  var hostUpdate = "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.update.akamaiapis.net";
   var secret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx+xxxxxxxxxxxxxx=";
   var accessToken = "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx";
   var clientToken = "akab-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx";
