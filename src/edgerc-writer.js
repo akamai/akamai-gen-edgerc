@@ -12,7 +12,8 @@ You may obtain a copy of the License at
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+WITHOUT WARRANTIES OR CON
+DITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 **/
@@ -57,13 +58,23 @@ exports.writeEdgercSection = function(
     clientToken,
     maxBody);
 
+  // Hack to remove any double quote characters from the properties
+  // that will be written to our .edgerc file. This is required since
+  // the ini module utilizes JSON.stringify which will add double 
+  // quotes around any string containing an equal sign. Since client
+  // secrets and other properties can contain equal signs, we check
+  // for and remove any quotations that may have been added here 
+  // before returning the data.
+
   // Add or update section data to the .edgerc ini Object
   edgercObj = addSection(edgercObj, title, sectionObj);
 
-  // Write the .edgerc ini data back to the file
-  fs.writeFileSync(path, ini.encode(edgercObj, {
+  encodedData = ini.encode(edgercObj, {
     "whitespace": true
-  }));
+  });
+
+  // Write the .edgerc ini data back to the file
+  fs.writeFileSync(path, stripQuotes(encodedData));
 };
 
 /**
@@ -105,4 +116,8 @@ function createSectionObj(
 function addSection(iniObj, sectionName, sectionObj) {
   iniObj[sectionName] = sectionObj;
   return iniObj;
+}
+
+function stripQuotes(data) {
+  return data.replace(/\"/g, "");
 }

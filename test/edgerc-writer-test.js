@@ -54,7 +54,6 @@ describe("edgerc-writer", function() {
   ///////////////////////////
   describe("#writeEdgercSection()", function() {
 
-
     beforeEach(function() {
       // Remove .edgerc file
       fs.removeSync(testEdgerc);
@@ -140,6 +139,28 @@ describe("edgerc-writer", function() {
       });
 
 
+    it("Removes any double quotes from the properties being written to the " +
+      ".edgerc file.",
+      function() {
+        // Make sure that the client_secret property does not contain double 
+        // quotes which it otherwise would since it ends in an equal sign.
+
+        // Create new section
+        edgercWriter.writeEdgercSection(
+          testEdgerc,
+          section,
+          host,
+          secret,
+          accessToken,
+          clientToken);
+
+        // Compare newly created section obj to exemplar
+        var edgercObj = ini.parse(fs.readFileSync(testEdgerc, 'utf-8'));
+        var edgercData = fs.readFileSync(testEdgerc, 'utf-8');
+        assert.notInclude(edgercData, '"');
+      });
+
+
     function callCreateSectionObj() {
       edgercWriter.writeEdgercSection(
         testEdgerc,
@@ -150,26 +171,5 @@ describe("edgerc-writer", function() {
         clientToken,
         maxBody);
     }
-
-    // it("Writes a section block to the .edgerc file.",
-    //   function(done) {
-    //     edgercWriter.writeEdgercSection(
-    //       testEdgerc,
-    //       section,
-    //       host,
-    //       secret,
-    //       accessToken,
-    //       clientToken,
-    //       null,
-    //       function(err, data) {
-    //         if (err) assert.fail(error);
-
-    //         // Verify block was written
-    //         var readBlock = fsUtils.readFileSync(testEdgerc);
-    //         assert.equal(readBlock, sectionBlock);
-    //         done();
-    //       });
-    //   });
-    // });
   });
 });
