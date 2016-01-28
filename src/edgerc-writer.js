@@ -58,14 +58,6 @@ exports.writeEdgercSection = function(
     clientToken,
     maxBody);
 
-  // Hack to remove any double quote characters from the properties
-  // that will be written to our .edgerc file. This is required since
-  // the ini module utilizes JSON.stringify which will add double 
-  // quotes around any string containing an equal sign. Since client
-  // secrets and other properties can contain equal signs, we check
-  // for and remove any quotations that may have been added here 
-  // before returning the data.
-
   // Add or update section data to the .edgerc ini Object
   edgercObj = addSection(edgercObj, title, sectionObj);
 
@@ -73,7 +65,15 @@ exports.writeEdgercSection = function(
     "whitespace": true
   });
 
-  // Write the .edgerc ini data back to the file
+  // Write the .edgerc ini data back to the file.
+  // 
+  // stripQuotes = Hack to remove any double quote characters from the properties
+  // that will be written to our .edgerc file. This is required since
+  // the ini module utilizes JSON.stringify which will add double 
+  // quotes around any string containing an equal sign. Since client
+  // secrets and other properties can contain equal signs, we check
+  // for and remove any quotations that may have been added here 
+  // before returning the data.
   fs.writeFileSync(path, stripQuotes(encodedData));
 };
 
