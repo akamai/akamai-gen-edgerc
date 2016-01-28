@@ -50,6 +50,9 @@ exports.writeEdgercSection = function(
   // Read the .edgerc file and parse as an ini Object
   var edgercObj = ini.parse(fs.readFileSync(path, 'utf-8'));
 
+  // Remove trailing slash from host (if it exists before writing
+  host = stripTrailingSlash(host);
+
   // Create section Object
   var sectionObj = createSectionObj(
     host,
@@ -116,6 +119,10 @@ function createSectionObj(
 function addSection(iniObj, sectionName, sectionObj) {
   iniObj[sectionName] = sectionObj;
   return iniObj;
+}
+
+function stripTrailingSlash(data) {
+  return data.replace(/\/$/, '');
 }
 
 function stripQuotes(data) {
