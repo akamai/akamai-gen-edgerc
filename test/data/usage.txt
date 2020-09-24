@@ -1,7 +1,9 @@
+
 Options
 
-  -f, --file string      Full path to the credentials file.                           
-  -s, --section string   Title of the section that will be added to the .edgerc file. 
-  -p, --path string      Full path to the .edgerc file.                               
-  -h, --help             Display help and usage information.                          
+  -f, --file string      Full path to the credentials file.                     
+  -s, --section string   Title of the section that will be added to the .edgerc 
+                         file.                                                  
+  -p, --path string      Full path to the .edgerc file.                         
+  -h, --help             Display help and usage information.                    
 

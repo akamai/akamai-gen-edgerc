@@ -17,7 +17,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 **/
 
-var genEdgerc = require('../bin/gen-edgerc');
 var mocha = require('mocha');
 var chai = require('chai');
 var assert = require('chai').assert;
@@ -33,7 +32,7 @@ var exec;
 describe('gen-edgerc', function() {
 
   before(function() {
-    exec = path.join(__dirname, "..", "bin", "gen-edgerc");
+    exec = path.join(__dirname, "..", "bin", "gen-edgerc.js");
   });
 
   it("Outputs a usage guide when the --help argument is passed.", function() {
