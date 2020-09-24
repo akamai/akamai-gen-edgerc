@@ -18,46 +18,52 @@ limitations under the License.
 **/
 
 var commandLineArgs = require('command-line-args');
+var commandLineUsage = require('command-line-usage');
 var os = require('os');
+
+var optionDefinitions = [
+  {
+    name: "file",
+    alias: "f",
+    type: String,
+    defaultValue: "",
+    description: "Full path to the credentials file.",
+    required: true,
+  },
+  {
+    name: "section",
+    alias: "s",
+    type: String,
+    defaultValue: "default",
+    description: "Title of the section that will be added to the .edgerc file.",
+  },
+  {
+    name: "path",
+    alias: "p",
+    type: String,
+    defaultValue: os.homedir() + "/.edgerc",
+    description: "Full path to the .edgerc file.",
+  },
+  {
+    name: "help",
+    alias: "h",
+    description: "Display help and usage information.",
+    type: Boolean,
+  },
+];
 
 // Returns an object containing the parameters that were passed in
 // via the command line.
 exports.getArguments = function() {
-  return createArguments().parse();
+  return commandLineArgs(optionDefinitions);
 };
 
 // Returns a string containing the usage guidelines for the command line args
 exports.getUsage = function() {
-  return createArguments().getUsage();
+  return commandLineUsage([
+    {
+      header: 'Options',
+      optionList: optionDefinitions
+    }
+  ]);
 };
-
-// Create and return an instance of the CommandLineArgs object with the desired 
-// arguments specified.
-function createArguments() {
-  var cli = commandLineArgs([{
-    name: 'file',
-    alias: 'f',
-    type: String,
-    defaultValue: "",
-    description: "Full path to the credentials file.",
-    required: true
-  }, {
-    name: 'section',
-    alias: 's',
-    type: String,
-    defaultValue: "default",
-    description: "Title of the section that will be added to the .edgerc file."
-  }, {
-    name: 'path',
-    alias: 'p',
-    type: String,
-    defaultValue: os.homedir() + "/.edgerc",
-    description: "Full path to the .edgerc file."
-  }, {
-    name: 'help',
-    alias: 'h',
-    description: "Display help and usage information."
-  }]);
-
-  return cli;
-}
